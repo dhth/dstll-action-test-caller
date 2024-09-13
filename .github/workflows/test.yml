@@ -32,7 +32,7 @@ jobs:
         run: |
           echo "commit=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - id: foo
+      - id: get-dstll-diff
         uses: dhth/dstll-action-test@v0.1.12
         with:
           directory: hours/hours
@@ -43,7 +43,7 @@ jobs:
       - run: echo "$DIFF"
         id: get-diff
         env:
-          DIFF: ${{ steps.foo.outputs.diff }}
+          DIFF: ${{ steps.get-dstll-diff.outputs.diff }}
 
       - uses: actions/github-script@v7
         with:
@@ -65,7 +65,7 @@ jobs:
             <details><summary> expand </summary>
 
             \`\`\`diff\n
-            ${{ steps.foo.outputs.diff }}
+            ${{ steps.get-dstll-diff.outputs.diff }}
             \`\`\`
 
             </details>`;
