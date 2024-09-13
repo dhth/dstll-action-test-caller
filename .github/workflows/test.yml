@@ -11,6 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: foo
-        uses: dhth/dstll-action-test@v0.1.0
+        uses: dhth/dstll-action-test@v0.1.1
         with:
           pattern: '**.go'
