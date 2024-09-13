@@ -11,6 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: foo
-        uses: dhth/dstll-action-test@v0.1.1
+        uses: dhth/dstll-action-test@v0.1.2
         with:
           pattern: '**.go'
+      - run: echo "$DIFF"
+        env:
+          DIFF: ${{ steps.foo.outputs.diff }}
