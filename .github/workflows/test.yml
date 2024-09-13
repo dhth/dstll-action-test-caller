@@ -10,10 +10,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: 'dhth/hours'
+          path: 'temp/hours'
+          fetch-depth: 20
+
+      - name: Get starting commit
+        id: get-starting-commit
+        working-directory: ./temp/hours
+        run: |
+          echo "commit=$(git rev-parse --short HEAD~10)" >> $GITHUB_OUTPUT
+
+      - name: Get ending commit
+        id: get-ending-commit
+        working-directory: ./temp/hours
+        run: |
+          echo "commit=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
       - id: foo
-        uses: dhth/dstll-action-test@v0.1.4
+        uses: dhth/dstll-action-test@v0.1.5
         with:
           pattern: '**.go'
+          starting-commit: ${{ steps.get-starting-commit.outputs.commit }}
+          ending-commit: ${{ steps.get-ending-commit.outputs.commit }}
+          directory: temp/hours
+
       - run: echo "$DIFF"
         env:
           DIFF: ${{ steps.foo.outputs.diff }}
