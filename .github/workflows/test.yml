@@ -60,14 +60,22 @@ jobs:
             })
 
             // 2. Prepare format of the comment
-            const output = `### dstll-diff
-            <details><summary> \`${{ steps.get-starting-commit.outputs.commit }}..${{ steps.get-starting-commit.outputs.commit }} -- '**.go'\` </summary>
+            let output;
+            if ('${{ steps.foo.outputs.diff }}' === 'No changes detected.') {
+                output = `### dstll-diff
+              > ${{ steps.get-starting-commit.outputs.commit }}..${{ steps.get-starting-commit.outputs.commit }} -- '**.go'
+              <span>No changes detected</span>`;
+            } else {
+              output = `### dstll-diff
+              > ${{ steps.get-starting-commit.outputs.commit }}..${{ steps.get-starting-commit.outputs.commit }} -- '**.go'
+              <details><summary> expand </summary>
 
-            \`\`\`diff\n
-            ${{ steps.foo.outputs.diff }}
-            \`\`\`
+              \`\`\`diff\n
+              ${{ steps.foo.outputs.diff }}
+              \`\`\`
 
-            </details>`;
+              </details>`;
+            }
 
             // 3. If we have a comment, update it, otherwise create a new one
             if (botComment) {
