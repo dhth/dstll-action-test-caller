@@ -33,7 +33,7 @@ jobs:
           echo "commit=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - id: foo
-        uses: dhth/dstll-action-test@v0.1.11
+        uses: dhth/dstll-action-test@v0.1.12
         with:
           directory: hours/hours
           pattern: '**.go'
@@ -60,22 +60,15 @@ jobs:
             })
 
             // 2. Prepare format of the comment
-            let output;
-            if ('${{ steps.foo.outputs.diff }}' === 'No changes detected.') {
-                output = `### dstll-diff
-              > ${{ steps.get-starting-commit.outputs.commit }}..${{ steps.get-starting-commit.outputs.commit }} -- '**.go'
-              <span>No changes detected</span>`;
-            } else {
-              output = `### dstll-diff
-              > ${{ steps.get-starting-commit.outputs.commit }}..${{ steps.get-starting-commit.outputs.commit }} -- '**.go'
-              <details><summary> expand </summary>
+            const output = `### dstll-diff
+            > ${{ steps.get-starting-commit.outputs.commit }}..${{ steps.get-ending-commit.outputs.commit }} -- '**.go'
+            <details><summary> expand </summary>
 
-              \`\`\`diff\n
-              ${{ steps.foo.outputs.diff }}
-              \`\`\`
+            \`\`\`diff\n
+            ${{ steps.foo.outputs.diff }}
+            \`\`\`
 
-              </details>`;
-            }
+            </details>`;
 
             // 3. If we have a comment, update it, otherwise create a new one
             if (botComment) {
