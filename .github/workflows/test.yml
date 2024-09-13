@@ -31,8 +31,8 @@ jobs:
 
       - id: foo
         uses: dhth/dstll-action-test@v0.1.9
-        working-directory: ./hours/hours
         with:
+          directory: hours/hours
           pattern: '**.go'
           starting-commit: ${{ steps.get-starting-commit.outputs.commit }}
           ending-commit: ${{ steps.get-ending-commit.outputs.commit }}
