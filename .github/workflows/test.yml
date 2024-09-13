@@ -14,18 +14,18 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: 'dhth/hours'
-          path: 'temp/hours'
+          path: 'hours/hours'
           fetch-depth: 20
 
       - name: Get starting commit
         id: get-starting-commit
-        working-directory: ./temp/hours
+        working-directory: ./hours/hours
         run: |
           echo "commit=$(git rev-parse --short HEAD~10)" >> $GITHUB_OUTPUT
 
       - name: Get ending commit
         id: get-ending-commit
-        working-directory: ./temp/hours
+        working-directory: ./hours/hours
         run: |
           echo "commit=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
@@ -35,7 +35,7 @@ jobs:
           pattern: '**.go'
           starting-commit: ${{ steps.get-starting-commit.outputs.commit }}
           ending-commit: ${{ steps.get-ending-commit.outputs.commit }}
-          directory: temp/hours
+          directory: hours/hours
 
       - run: echo "$DIFF"
         env:
