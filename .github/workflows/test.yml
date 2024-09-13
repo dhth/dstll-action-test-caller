@@ -33,7 +33,7 @@ jobs:
           echo "commit=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - id: get-dstll-diff
-        uses: dhth/dstll-action-test@v0.1.12
+        uses: dhth/dstll-action-test@v0.1.13
         with:
           directory: hours/hours
           pattern: '**.go'

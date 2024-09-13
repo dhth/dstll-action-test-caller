@@ -41,7 +41,7 @@ jobs:
           echo "commit=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - id: get-dstll-diff
-        uses: dhth/dstll-action-test@v0.1.12
+        uses: dhth/dstll-action-test@v0.1.13
         with:
           directory: hours/hours
           pattern: '**.go'
@@ -49,14 +49,19 @@ jobs:
           ending-commit: ${{ steps.get-ending-commit.outputs.commit }}
 
       - uses: actions/setup-node@v4
+        if: ${{ steps.foo.outputs.diff != 'No changes detected.' }}
+        env:
+          DIFF: ${{ steps.foo.outputs.diff }}
         with:
           node-version: '20.x'
 
       - name: Install diff2html-cli
+        if: ${{ steps.foo.outputs.diff != 'No changes detected.' }}
         run: |
           npm install -g diff2html-cli
 
       - name: Generate webpage
+        if: ${{ steps.foo.outputs.diff != 'No changes detected.' }}
         env:
           DIFF: ${{ steps.get-dstll-diff.outputs.diff }}
         run: |
@@ -65,6 +70,7 @@ jobs:
           cat docs/index.html
 
       - name: Upload artifact
+        if: ${{ steps.foo.outputs.diff != 'No changes detected.' }}
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./docs
