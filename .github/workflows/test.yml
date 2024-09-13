@@ -30,12 +30,12 @@ jobs:
           echo "commit=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - id: foo
-        uses: dhth/dstll-action-test@v0.1.8
+        uses: dhth/dstll-action-test@v0.1.9
+        working-directory: ./hours/hours
         with:
           pattern: '**.go'
           starting-commit: ${{ steps.get-starting-commit.outputs.commit }}
           ending-commit: ${{ steps.get-ending-commit.outputs.commit }}
-          directory: hours/hours
 
       - run: echo "$DIFF"
         env:
