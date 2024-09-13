@@ -38,5 +38,50 @@ jobs:
           ending-commit: ${{ steps.get-ending-commit.outputs.commit }}
 
       - run: echo "$DIFF"
+        id: get-diff
         env:
           DIFF: ${{ steps.foo.outputs.diff }}
+
+      - uses: actions/github-script@v7
+        if: ${{ steps.foo.outputs.diff != 'No changes detected.' }}
+        env:
+          DIFF: ${{ steps.foo.outputs.diff }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            // 1. Retrieve existing bot comments for the PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && comment.body.includes('dstll-diff')
+            })
+
+            // 2. Prepare format of the comment
+            const output = `## dstll-diff
+            <details><summary> ${{ steps.get-starting-commit.outputs.commit }}..${{ steps.get-starting-commit.outputs.commit }} -- '**.go' </summary>
+
+            \`\`\`\n
+            ${{ steps.foo.outputs.diff }}
+            \`\`\`
+
+            </details>`;
+
+            // 3. If we have a comment, update it, otherwise create a new one
+            if (botComment) {
+              github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: output
+              })
+            } else {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              })
+            }
