@@ -1,8 +1,7 @@
 name: dstll-test-caller
 
 on:
-  push:
-    branches: [ "main" ]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -33,8 +32,8 @@ jobs:
         run: |
           echo "commit=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - id: foo
-        uses: dhth/dstll-action-test@v0.1.11
+      - id: get-dstll-diff
+        uses: dhth/dstll-action-test@v0.1.14
         with:
           directory: hours/hours
           pattern: '**.go'
@@ -44,12 +43,9 @@ jobs:
       - run: echo "$DIFF"
         id: get-diff
         env:
-          DIFF: ${{ steps.foo.outputs.diff }}
+          DIFF: ${{ steps.get-dstll-diff.outputs.diff }}
 
       - uses: actions/github-script@v7
-        if: ${{ steps.foo.outputs.diff != 'No changes detected.' }}
-        env:
-          DIFF: ${{ steps.foo.outputs.diff }}
         with:
           github-token: ${{ github.token }}
           script: |
@@ -64,11 +60,12 @@ jobs:
             })
 
             // 2. Prepare format of the comment
-            const output = `## dstll-diff
-            <details><summary> ${{ steps.get-starting-commit.outputs.commit }}..${{ steps.get-starting-commit.outputs.commit }} -- '**.go' </summary>
+            const output = `### dstll-diff
+            > ${{ steps.get-starting-commit.outputs.commit }}..${{ steps.get-ending-commit.outputs.commit }} -- '**.go'
+            <details><summary> expand </summary>
 
-            \`\`\`\n
-            ${{ steps.foo.outputs.diff }}
+            \`\`\`diff\n
+            ${{ steps.get-dstll-diff.outputs.diff }}
             \`\`\`
 
             </details>`;
